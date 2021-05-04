@@ -1,0 +1,46 @@
+5
+com.company.Prints.Magazine
+First title
+19
+5
+495
+877
+167
+516
+896
+com.company.Prints.Magazine
+Second title
+64
+5
+955
+596
+784
+110
+217
+com.company.Prints.Book
+Third title
+56
+5
+893
+656
+145
+984
+687
+com.company.Prints.Book
+Fourth title
+27
+5
+683
+35
+884
+198
+94
+com.company.Prints.Magazine
+Fifth title
+73
+5
+279
+777
+455
+122
+895

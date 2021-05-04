@@ -4,28 +4,30 @@ import com.company.Exceptions.IllegalIndexException;
 import com.company.Exceptions.NullObjectException;
 import static com.company.Prints.WorkWithPrintables.*;
 
-import com.company.Prints.InputAndOutputPrintable;
-import com.company.Prints.Magazine;
-import com.company.Prints.Book;
-import com.company.Prints.Printable;
+import com.company.Factories.BookPrintFactory;
+import com.company.Factories.MagazinePrintFactory;
+import com.company.Factories.PrintableFactory;
+import com.company.Prints.*;
+
 import static com.company.Prints.InputAndOutputPrintable.*;
 import static com.company.Prints.InputAndOutputPrintableArray.*;
 
 import java.io.*;
+import java.util.List;
 import java.util.Scanner;
 
 
 public class MenuMethods {
 
-    private static final String BYTES_FILE_WITH_SER = "serAsBytes.bin";
-    private static final String TEXT_FILE_WITH_SER = "serAsText.txt";
-    private static final String SERIALIZED_FILE_WITH_SER = "serSerialized.bin";
+    private static final String BYTES_FILE_WITH_PRT = "prtAsBytes.bin";
+    private static final String TEXT_FILE_WITH_PRT = "prtAsText.txt";
+    private static final String SERIALIZED_FILE_WITH_PRT = "prtSerialized.bin";
 
-    private static final String BYTES_FILE_WITH_SER_ARR = "serArrAsBytes.bin";
-    private static final String TEXT_FILE_WITH_SER_ARR = "serArrAsText.txt";
-    private static final String SERIALIZED_FILE_WITH_SER_ARR = "serArrSerialized.bin";
+    private static final String BYTES_FILE_WITH_PRT_ARR = "prtArrAsBytes.bin";
+    private static final String TEXT_FILE_WITH_PRT_ARR = "prtArrAsText.txt";
+    private static final String SERIALIZED_FILE_WITH_PRT_ARR = "prtArrSerialized.bin";
 
-    final static String separator = "------------------------------------------------------------------\n";
+    final static String separator = "---------------------------------------------------------------------------------\n";
 
     static void printTask(String task) {
         System.out.print("\n" + task + "\n" + separator);
@@ -51,7 +53,7 @@ public class MenuMethods {
                 "Fill magazine with pages:");
         fillWithPages(m);
 
-        return m;
+        return (Magazine) createInstance(title, numberOfArticles, numberOfIntroducingPages);
     }
 
     private static Book addNewBook() {
@@ -67,7 +69,7 @@ public class MenuMethods {
                 "Fill book with pages:");
         fillWithPages(b);
 
-        return b;
+        return (Book) createInstance(title, numberOfArticles, numberOfIntroducingPages);
     }
 
     static Printable getAndSetPrintable() {
@@ -78,8 +80,8 @@ public class MenuMethods {
             System.out.print("Choose element type: \n" +
                     separator +
                     "1. " + Magazine.class.getName() +
-                    "2. " + Book.class.getName() +
-                    separator +
+                    "\n2. " + Book.class.getName() +
+                    "\n" + separator +
                     ">");
             str = in.nextLine();
             System.out.println();
@@ -239,9 +241,6 @@ public class MenuMethods {
         }
     }
 
-
-
-    //todo: удалить, если будет не нужно.
     static void printPrintableArrayAsTitlesOfElements(Printable[] pArr) {
         System.out.print("база данных: ");
         if (pArr == null) {
@@ -325,34 +324,18 @@ public class MenuMethods {
         }
     }
 
-    private static int getAmountOfPagesInArticle() {
-        int num;
-        while (true) {
-            num = getInt();
-            if (num < Printable.MIN_AMOUNT_OF_PAGES) {
-                System.out.println("Error: amount of pages must be higher than " + Printable.MIN_AMOUNT_OF_PAGES);
-            } else if (num > Printable.MAX_AMOUNT_OF_PAGES) {
-                System.out.println("There are too much pages.");
-            } else {
-                return num;
-            }
-        }
-    }
-
-
-
-    //todo: удалить то, что выше, если не нужно.
-
-    static void getArrayWithTwoSameSumOfPagesWithoutIntro(Printable[] pArr) {
-        Printable[] arrayWithTwoSameSumOfPagesWithoutIntro;
+    static List<Printable[]> getArrayWithSameSumOfPagesWithoutIntro(Printable[] pArr) {
+        List<Printable[]> arrayWithSameSumOfPagesWithoutIntro = null;
 
         try {
-            arrayWithTwoSameSumOfPagesWithoutIntro = getPrintableArrayWithTwoSameSumOfPagesWithoutIntro(pArr);
+            arrayWithSameSumOfPagesWithoutIntro = getPrintableArrayWithSameSumOfPagesWithoutIntro(pArr);
             System.out.println("Database created successfully.\n");
-            printPrintableArray(arrayWithTwoSameSumOfPagesWithoutIntro);
+            return arrayWithSameSumOfPagesWithoutIntro;
+
         } catch (Exception exc) {
             System.out.println(exc.getMessage());
         }
+        return arrayWithSameSumOfPagesWithoutIntro;
     }
 
     static void splitArrayIntoTwoBooksAndMagazines(Printable[] pArr) {
@@ -362,7 +345,7 @@ public class MenuMethods {
             try {
                 Magazine[] m = getMagazinesFromPrintableArray(pArr);
                 Book[] b = getBooksFromPrintableArray(pArr);
-                System.out.println("Split of database was successfull.");
+                System.out.println("Split of database was successful.");
                 System.out.println();
                 printPrintableArray(m);
                 printPrintableArray(b);
@@ -380,7 +363,7 @@ public class MenuMethods {
         } else {
             FileOutputStream fileOutputter;
             try {
-                fileOutputter = new FileOutputStream(BYTES_FILE_WITH_SER);
+                fileOutputter = new FileOutputStream(BYTES_FILE_WITH_PRT);
                 InputAndOutputPrintable.outputPrintableAsBytes(p, fileOutputter);
                 fileOutputter.flush();
                 fileOutputter.close();
@@ -397,7 +380,7 @@ public class MenuMethods {
         } else {
             FileWriter fileWriter;
             try {
-                fileWriter = new FileWriter(TEXT_FILE_WITH_SER);
+                fileWriter = new FileWriter(TEXT_FILE_WITH_PRT);
                 InputAndOutputPrintable.writePrintableAsText(p, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
@@ -414,7 +397,7 @@ public class MenuMethods {
         } else {
             FileOutputStream fileOutputter;
             try {
-                fileOutputter = new FileOutputStream(SERIALIZED_FILE_WITH_SER);
+                fileOutputter = new FileOutputStream(SERIALIZED_FILE_WITH_PRT);
                 InputAndOutputPrintable.serializePrintable(p, fileOutputter);
                 fileOutputter.flush();
                 fileOutputter.close();
@@ -431,7 +414,7 @@ public class MenuMethods {
         } else {
             FileOutputStream fileOutputter;
             try {
-                fileOutputter = new FileOutputStream(BYTES_FILE_WITH_SER_ARR);
+                fileOutputter = new FileOutputStream(BYTES_FILE_WITH_PRT_ARR);
                 outputPrintableArrayAsBytes(pArr, fileOutputter);
                 fileOutputter.flush();
                 fileOutputter.close();
@@ -448,7 +431,7 @@ public class MenuMethods {
         } else {
             FileWriter fileWriter;
             try {
-                fileWriter = new FileWriter(TEXT_FILE_WITH_SER_ARR);
+                fileWriter = new FileWriter(TEXT_FILE_WITH_PRT_ARR);
                 writePrintableArrayAsText(pArr, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
@@ -465,7 +448,7 @@ public class MenuMethods {
         } else {
             FileOutputStream fileOutputter;
             try {
-                fileOutputter = new FileOutputStream(SERIALIZED_FILE_WITH_SER_ARR);
+                fileOutputter = new FileOutputStream(SERIALIZED_FILE_WITH_PRT_ARR);
                 serializePrintableArray(pArr, fileOutputter);
                 fileOutputter.flush();
                 fileOutputter.close();
@@ -480,7 +463,7 @@ public class MenuMethods {
         Printable p = null;
         FileInputStream fInput;
         try {
-            fInput = new FileInputStream(BYTES_FILE_WITH_SER);
+            fInput = new FileInputStream(BYTES_FILE_WITH_PRT);
             p = inputBytesAsPrintable(fInput);
             fInput.close();
 
@@ -501,7 +484,7 @@ public class MenuMethods {
         FileReader fileReader;
         BufferedReader bufferedReader;
         try {
-            fileReader = new FileReader(TEXT_FILE_WITH_SER);
+            fileReader = new FileReader(TEXT_FILE_WITH_PRT);
             bufferedReader = new BufferedReader(fileReader);
             p = readTextAsPrintable(bufferedReader);
             bufferedReader.close();
@@ -520,7 +503,7 @@ public class MenuMethods {
         Printable p = null;
         FileInputStream fileInputter;
         try {
-            fileInputter = new FileInputStream(SERIALIZED_FILE_WITH_SER);
+            fileInputter = new FileInputStream(SERIALIZED_FILE_WITH_PRT);
             p = deserializePrintable(fileInputter);
             fileInputter.close();
             System.out.println("Object was deserialized from file successfully.");
@@ -537,7 +520,7 @@ public class MenuMethods {
         Printable[] pArr = null;
         FileInputStream fileInputter;
         try {
-            fileInputter = new FileInputStream(BYTES_FILE_WITH_SER_ARR);
+            fileInputter = new FileInputStream(BYTES_FILE_WITH_PRT_ARR);
             pArr = inputByteAsPrintableArray(fileInputter);
             fileInputter.close();
             System.out.println("Object was read from byte stream successfully.");
@@ -554,7 +537,7 @@ public class MenuMethods {
         Printable[] pArr = null;
         FileReader fileReader;
         try {
-            fileReader = new FileReader(TEXT_FILE_WITH_SER_ARR);
+            fileReader = new FileReader(TEXT_FILE_WITH_PRT_ARR);
             pArr = readTextAsPrintableArray(fileReader);
             fileReader.close();
             System.out.println("Object was read from text stream successfully.");
@@ -571,7 +554,7 @@ public class MenuMethods {
         Printable[] pArr = null;
         FileInputStream fileInputter;
         try {
-            fileInputter = new FileInputStream(SERIALIZED_FILE_WITH_SER_ARR);
+            fileInputter = new FileInputStream(SERIALIZED_FILE_WITH_PRT_ARR);
             pArr = deserializePrintableArray(fileInputter);
             fileInputter.close();
             System.out.println("Array was deserialized successfully.");
@@ -582,5 +565,15 @@ public class MenuMethods {
             throw new NullObjectException("Can't deserialize Printable array.");
         }
         return pArr;
+    }
+
+    static void printSetBookFactory() {
+        BookPrintFactory bpf = new BookPrintFactory();
+        WorkWithPrintables.setPrintableFactory(bpf);
+    }
+
+    static void printMagazineFactory() {
+        MagazinePrintFactory mpf = new MagazinePrintFactory();
+        WorkWithPrintables.setPrintableFactory(mpf);
     }
 }

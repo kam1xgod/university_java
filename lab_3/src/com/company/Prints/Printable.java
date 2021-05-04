@@ -1,9 +1,10 @@
 package com.company.Prints;
 
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.Writer;
 
-public interface Printable{
+public interface Printable extends Serializable, Iterable<Integer> {
 
     int MIN_AMOUNT_OF_ELEMENTS_IN_ARRAY = 1;                    //minimal length of each array;
     int MAX_AMOUNT_OF_ELEMENTS_IN_ARRAY = 6;                    //maximum length of each array;

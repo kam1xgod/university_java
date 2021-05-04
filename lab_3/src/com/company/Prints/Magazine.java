@@ -1,11 +1,12 @@
 package com.company.Prints;
 
-import java.io.OutputStream;
-import java.io.Writer;
+import com.company.Factories.AmountOfPagesIterator;
+
+import java.io.*;
 import java.util.Arrays;
+import java.util.Iterator;
 
-
-public class Magazine implements Printable {
+public class Magazine implements Printable, Serializable {
 
                                                                             //pagesInArticles — массив;
                                                                             //title — название;
@@ -16,7 +17,7 @@ public class Magazine implements Printable {
     String title;
     int introducingPages;
 
-    Magazine() {}                                                                   //конструктор по умолчанию.
+    public Magazine() {}                                                                   //конструктор по умолчанию.
 
     public Magazine(String title, int numberOfArticles, int introducingPages) {     //конструктор с параметрами,
                                                                                     //позволяющими полностью
@@ -100,7 +101,7 @@ public class Magazine implements Printable {
             result += this.pagesInArticles[i];
         }
 
-        return result - this.introducingPages;
+        return result;
     }
 
     public String getInfo() {
@@ -119,12 +120,38 @@ public class Magazine implements Printable {
 
     @Override
     public void outputAsBytes(OutputStream out) {
+        DataOutputStream dataOutputter = new DataOutputStream(out);
 
+        try {
+            dataOutputter.writeUTF(getClass().getName());
+            dataOutputter.writeUTF(title);
+            dataOutputter.writeInt(introducingPages);
+            dataOutputter.writeInt(getAmountOfArticles());
+
+            for (int pages:
+                    pagesInArticles) {
+                dataOutputter.writeInt(pages);
+            }
+        } catch (IOException exc) {
+            System.out.println(exc.getMessage());
+        }
     }
 
     @Override
     public void writeAsText(Writer out) {
+        PrintWriter printer = new PrintWriter(out);
 
+        printer.println(getClass().getName());
+        printer.println(title);
+        printer.println(introducingPages);
+        printer.println(getAmountOfArticles());
+
+        for (int pages:
+             pagesInArticles) {
+            printer.println(pages);
+        }
+
+        printer.flush();
     }
 
     @Override
@@ -154,10 +181,14 @@ public class Magazine implements Printable {
 
     @Override
     public String toString() {
-        return "Book[" +
-                "name = " + title +
-                "; pages in each article = " + Arrays.toString(pagesInArticles) +
+        return "Magazine\n[ " +
+                "name = " + title + "; pages in each article = " + Arrays.toString(pagesInArticles) +
                 "; introducing pages = " + introducingPages +
                 "]";
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return new AmountOfPagesIterator(this.pagesInArticles);
     }
 }

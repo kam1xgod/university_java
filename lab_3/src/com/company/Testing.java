@@ -7,11 +7,11 @@ import com.company.Prints.Printable;
 import java.util.Random;
 
 public class Testing {
-    private static final String TITLE_1 = "First title.\n";
-    private static final String TITLE_2 = "Second title.\n";
-    private static final String TITLE_3 = "Third title.\n";
-    private static final String TITLE_4 = "Fourth title.\n";
-    private static final String TITLE_5 = "Fifth title.\n";
+    private static final String TITLE_1 = "First title";
+    private static final String TITLE_2 = "Second title";
+    private static final String TITLE_3 = "Third title";
+    private static final String TITLE_4 = "Fourth title";
+    private static final String TITLE_5 = "Fifth title";
 
     private static int getRandomInt(int min, int max) {
         int result;
@@ -43,11 +43,11 @@ public class Testing {
     private static Printable[] createPrintableArrayWithFileElements() {
         final int articles = 5;
         Printable[] p = new Printable[articles];
-        p[0] = getPrintableWithRandomGeneratedType(TITLE_1, articles, getRandomAmountOfIntroducingPages());
-        p[1] = getPrintableWithRandomGeneratedType(TITLE_2, articles, getRandomAmountOfIntroducingPages());
-        p[2] = getPrintableWithRandomGeneratedType(TITLE_3, articles, getRandomAmountOfIntroducingPages());
-        p[3] = getPrintableWithRandomGeneratedType(TITLE_4, articles, getRandomAmountOfIntroducingPages());
-        p[4] = getPrintableWithRandomGeneratedType(TITLE_5, articles, getRandomAmountOfIntroducingPages());
+        p[0] = getPrintableWithRandomGeneratedType(TITLE_1, getRandomAmountOfIntroducingPages(), articles);
+        p[1] = getPrintableWithRandomGeneratedType(TITLE_2, getRandomAmountOfIntroducingPages(), articles);
+        p[2] = getPrintableWithRandomGeneratedType(TITLE_3, getRandomAmountOfIntroducingPages(), articles);
+        p[3] = getPrintableWithRandomGeneratedType(TITLE_4, getRandomAmountOfIntroducingPages(), articles);
+        p[4] = getPrintableWithRandomGeneratedType(TITLE_5, getRandomAmountOfIntroducingPages(), articles);
         return p;
     }
 

@@ -1,10 +1,12 @@
 package com.company.Prints;
 
-import java.io.OutputStream;
-import java.io.Writer;
-import java.util.Arrays;
+import com.company.Factories.AmountOfPagesIterator;
 
-public class Book implements Printable {
+import java.io.*;
+import java.util.Arrays;
+import java.util.Iterator;
+
+public class Book implements Printable, Serializable {
 
                                                                                 //pagesInArticles — массив;
                                                                                 //title — название;
@@ -15,7 +17,7 @@ public class Book implements Printable {
     String title;
     int introducingPages;
 
-    Book() {}                                                                   //конструктор по умолчанию.
+    public Book() {}                                                                   //конструктор по умолчанию.
 
     public Book(String title, int numberOfArticles, int introducingPages){      //конструктор с параметрами,
                                                                                 // позволяющими полностью
@@ -117,12 +119,37 @@ public class Book implements Printable {
 
     @Override
     public void outputAsBytes(OutputStream out) {
+        DataOutputStream dataOutputter = new DataOutputStream(out);
 
+        try {
+            dataOutputter.writeUTF(getClass().getName());
+            dataOutputter.writeUTF(title);
+            dataOutputter.writeInt(introducingPages);
+            dataOutputter.writeInt(getAmountOfArticles());
+
+            for (int i = 0; i < getAmountOfArticles(); ++i) {
+                dataOutputter.writeInt(pagesInArticles[i]);
+            }
+        } catch (IOException exc) {
+            System.out.println(exc.getMessage());
+        }
     }
 
     @Override
     public void writeAsText(Writer out) {
+        PrintWriter printer = new PrintWriter(out);
 
+        printer.println(getClass().getName());
+        printer.println(title);
+        printer.println(introducingPages);
+        printer.println(getAmountOfArticles());
+
+        for (int pages:
+                pagesInArticles) {
+            printer.println(pages);
+        }
+
+        printer.flush();
     }
 
     @Override
@@ -152,10 +179,14 @@ public class Book implements Printable {
 
     @Override
     public String toString() {
-        return "Book[" +
-                "name = " + title +
-                "; pages in each chapter = " + Arrays.toString(pagesInArticles) +
+        return "Book\n[" +
+                "name = " + title + "; pages in each chapter = " + Arrays.toString(pagesInArticles) +
                 "; introducing pages = " + introducingPages +
                 "]";
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return new AmountOfPagesIterator(this.pagesInArticles);
     }
 }

@@ -1,9 +1,16 @@
 package com.company.Prints;
 
 import com.company.Exceptions.DatabaseNotSelectedException;
+import com.company.Factories.BookPrintFactory;
+import com.company.Factories.PrintableFactory;
+import com.company.Factories.SynchronizedPrintable;
+import com.company.Factories.UnmodifiablePrintable;
 
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class WorkWithPrintables {
 
@@ -78,30 +85,70 @@ public class WorkWithPrintables {
         }
     }
 
-    public static Printable[] getPrintableArrayWithTwoSameSumOfPagesWithoutIntro (Printable[]pArr)
+    public static List<Printable[]> getPrintableArrayWithSameSumOfPagesWithoutIntro(Printable[] pArr)
             throws DatabaseNotSelectedException {
         if (pArr == null) {
             throw new DatabaseNotSelectedException("Operation denied. Database wasn't selected.");
         } else {
+            List<Printable[]> sameSumOfPagesWithoutIntro = new ArrayList<>();
+
             int[] sumOfPagesWithoutIntro = getSumOfPagesWithoutIntro(pArr);
+            boolean[] check = new boolean[pArr.length];
+            Arrays.fill(check, Boolean.TRUE);
             int currentIndexOfSum;
             int indexToCompareWith;
             int length = sumOfPagesWithoutIntro.length;
 
+            List<Printable> temp = new ArrayList<Printable>();
+
             for (currentIndexOfSum = 0; currentIndexOfSum < length; ++currentIndexOfSum) {
+                temp.add(pArr[currentIndexOfSum]);
                 for (indexToCompareWith = currentIndexOfSum + 1; indexToCompareWith < length; ++indexToCompareWith) {
                     if (sumOfPagesWithoutIntro[currentIndexOfSum] == sumOfPagesWithoutIntro[indexToCompareWith]) {
-                        Printable[] twoSameSumOfPagesWithoutIntro = new Printable[2];
-                        twoSameSumOfPagesWithoutIntro[0] = pArr[currentIndexOfSum];
-                        twoSameSumOfPagesWithoutIntro[1] = pArr[indexToCompareWith];
-                        return twoSameSumOfPagesWithoutIntro;
+                        if (check[indexToCompareWith] == true) {
+                            temp.add(pArr[indexToCompareWith]);
+                            check[indexToCompareWith] = false;
+                        }
                     }
                 }
+                if (temp.size() != 1) {
+                    Printable[] sameObject = new Printable[temp.size()];
+                    for (int i = 0; i < temp.size(); ++i) {
+                        sameObject[i] = temp.get(i);
+                    }
+                    sameSumOfPagesWithoutIntro.add(sameObject);
+                }
+                temp.clear();
             }
-            throw  new NoSuchElementException("No such elements.");
+            if (sameSumOfPagesWithoutIntro == null) {
+                throw  new NoSuchElementException("No such elements.");
+            }
+
+            return sameSumOfPagesWithoutIntro;
         }
     }
 
+    private static PrintableFactory factory = new BookPrintFactory();
+
+    public static void setPrintableFactory(PrintableFactory pf) {
+        factory = pf;
+    }
+
+    public static Printable createInstance() {
+        return factory.createInstance();
+    }
+
+    public static Printable createInstance(String title, int amountOfArticles, int amountOfIntroPages) {
+        return factory.createInstance(title, amountOfArticles, amountOfIntroPages);
+    }
+
+    public static Printable getSynchroPrint(Printable p) {
+        return new SynchronizedPrintable(p);
+    }
+
+    public static Printable getUnmodifiablePrintable(Printable p) {
+        return new UnmodifiablePrintable(p);
+    }
 }
 
 

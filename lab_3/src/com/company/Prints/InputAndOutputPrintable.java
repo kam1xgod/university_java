@@ -70,7 +70,7 @@ public class InputAndOutputPrintable {
             int amountOfIntroducingPages = Integer.parseInt(bf.readLine());
             int amountOfArticles = Integer.parseInt(bf.readLine());
 
-            p = getNewPrintableByClassName(className, title, amountOfIntroducingPages, amountOfArticles);
+            p = getNewPrintableByClassName(className, title,amountOfArticles, amountOfIntroducingPages);
             final int length =  p.getAmountOfArticles();
             int amountOfPagesInArticle;
             for (int index = 0; index < length; ++index) {

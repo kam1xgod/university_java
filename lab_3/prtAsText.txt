@@ -1,0 +1,9 @@
+com.company.Prints.Magazine
+First title
+51
+5
+956
+510
+988
+749
+344
